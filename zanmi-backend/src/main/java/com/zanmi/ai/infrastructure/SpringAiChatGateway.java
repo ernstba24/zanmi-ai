@@ -15,7 +15,6 @@ public class SpringAiChatGateway implements ChatGateway {
 
     @Override
     public String generate(String message) {
-        // TODO: call the model through chatClient (developer-owned) and return the generated text.
-        throw new UnsupportedOperationException("Model call not implemented yet");
+        return chatClient.prompt().user(message).call().content();
     }
 }

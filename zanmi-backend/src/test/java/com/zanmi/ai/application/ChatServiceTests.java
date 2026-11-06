@@ -1,9 +1,11 @@
 package com.zanmi.ai.application;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ChatServiceTests {
@@ -17,10 +19,13 @@ class ChatServiceTests {
         chatService = new ChatService(chatGateway);
     }
 
-    @Disabled("TODO: enable once ChatService behavior is defined and implemented")
     @Test
     void chatReturnsGatewayResult() {
-        // TODO: stub chatGateway.generate(...), call chatService.chat(...), and assert the
-        // outcome you define. chatGateway and chatService are ready to use.
+        when(chatGateway.generate("Hello")).thenReturn("Hi there");
+
+        String result = chatService.chat("Hello");
+
+        assertEquals("Hi there", result);
+        verify(chatGateway).generate("Hello");
     }
 }

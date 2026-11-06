@@ -12,7 +12,6 @@ public class ChatService {
     }
 
     public String chat(String message) {
-        // TODO: define the chat behavior (developer-owned), then call chatGateway.
-        throw new UnsupportedOperationException("Chat behavior not implemented yet");
+        return chatGateway.generate(message);
     }
 }
