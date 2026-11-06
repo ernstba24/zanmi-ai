@@ -1,6 +1,7 @@
 package com.zanmi.ai.api;
 
 import com.zanmi.ai.application.ChatService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ public class ChatController {
     }
 
     @PostMapping
-    public ChatResponse chat(@RequestBody ChatRequest request) {
+    public ChatResponse chat(@Valid @RequestBody ChatRequest request) {
         return new ChatResponse(chatService.chat(request.message()));
     }
 }

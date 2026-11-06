@@ -54,6 +54,38 @@ Values are resolved in this order, highest first: command-line arguments, OS env
 
 Do not expose additional Actuator endpoints or enable debug logging for the HTTP client without checking that secrets cannot leak.
 
+## Chat API and error responses
+
+`POST /api/chat` accepts `{"message": "..."}` and returns `{"response": "..."}`. `message` must not be blank and may be at most 4000 characters.
+
+All errors use one JSON shape:
+
+```json
+{
+  "timestamp": "2026-11-06T14:00:00Z",
+  "status": 400,
+  "error": "Bad Request",
+  "code": "VALIDATION_ERROR",
+  "message": "The request contains invalid fields",
+  "path": "/api/chat",
+  "fieldErrors": [{ "field": "message", "message": "must not be blank" }]
+}
+```
+
+`fieldErrors` appears only for validation errors. Messages are fixed text; provider messages, stack traces and request contents are never returned.
+
+| Situation | HTTP | `code` |
+|---|---|---|
+| Blank, missing or too-long `message` | 400 | `VALIDATION_ERROR` |
+| Missing or malformed JSON body | 400 | `MALFORMED_REQUEST` |
+| Other Spring web errors (for example wrong HTTP method) | their own status | `REQUEST_ERROR` |
+| Provider rejected the request (bad key, quota, rate limit) | 502 | `PROVIDER_ERROR` |
+| Provider unreachable or returned a 5xx error | 503 | `PROVIDER_UNAVAILABLE` |
+| Provider did not answer in time | 504 | `PROVIDER_TIMEOUT` |
+| Any other unexpected error | 500 | `INTERNAL_ERROR` |
+
+Provider details are written to the server log as the reason and exception class only. No retry, fallback or timeout setting is configured by this application; Spring AI applies its own default retry behavior.
+
 ## Run tests
 
 From this directory:
