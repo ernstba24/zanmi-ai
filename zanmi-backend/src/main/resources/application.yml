@@ -1,0 +1,16 @@
+spring:
+  config:
+    # Optional local overrides; ignored by git. See .env.example.
+    import: optional:file:.env[.properties]
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o-mini}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

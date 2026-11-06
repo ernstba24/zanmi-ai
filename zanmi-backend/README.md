@@ -11,13 +11,48 @@ Confirm your installed versions with `java -version` and `mvn -version`.
 
 ## Run locally
 
-From this directory, start the application with:
+From this directory, set `OPENAI_API_KEY` (see [Configuration](#configuration)) and start the application with:
 
 ```shell
 mvn spring-boot:run
 ```
 
 The health endpoint is available at [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health). A healthy application responds with a status of `UP`.
+
+## Configuration
+
+Model settings are read from external configuration. Defaults that are safe to commit live in [application.yml](src/main/resources/application.yml). Secrets are never stored in the repository.
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `OPENAI_API_KEY` | Yes | none | OpenAI API key (secret). |
+| `OPENAI_MODEL` | No | `gpt-4o-mini` | OpenAI model name. |
+| `SPRING_AI_OPENAI_CHAT_OPTIONS_TEMPERATURE` | No | unset | Sampling temperature. When unset, the OpenAI default applies. |
+
+If `OPENAI_API_KEY` is missing or empty, the application fails at startup with an error that names the `spring.ai.openai.api-key` property. The error does not print any key value.
+
+### Supplying values locally
+
+Use either approach:
+
+1. **Shell environment variables:**
+
+   ```shell
+   export OPENAI_API_KEY=your-api-key
+   mvn spring-boot:run
+   ```
+
+2. **A local `.env` file** in this directory. Copy the template and replace the placeholder:
+
+   ```shell
+   cp .env.example .env
+   ```
+
+   The application imports `.env` automatically when it exists. `.env` is ignored by git; only the placeholder-only [.env.example](.env.example) is committed. Never commit real keys.
+
+Values are resolved in this order, highest first: command-line arguments, OS environment variables, `.env`, then the defaults in `application.yml`. Tests always use a fake `OPENAI_API_KEY` supplied by Maven Surefire, so they never use a real key or call OpenAI.
+
+Do not expose additional Actuator endpoints or enable debug logging for the HTTP client without checking that secrets cannot leak.
 
 ## Run tests
 
